@@ -1,0 +1,61 @@
+# Every tunable number lives here. Relative paths are resolved from this file's folder.
+
+paths:
+  data_root: BTSP_training_data   # folder that contains the BraTS2021_XXXXX patient folders
+  output_dir: outputs             # each run gets outputs/run_YYYYMMDD_HHMMSS/
+
+seed: 42
+
+data:
+  val_fraction: 0.2           # split BY PATIENT
+  max_patients: null          # cap on patients loaded before the split; null = all
+  crop_size: 192              # must be divisible by 2**model.depth (240 is not divisible by 16)
+  modalities: [flair, t1, t1ce, t2]   # channel order fed to the model
+  shuffle_buffer_patients: 8  # training streams this many patients at a time and mixes their slices
+  scan_workers: 2             # processes used for the one-time slice-selection scan
+
+slice_selection:              # applied to the TRAINING split only
+  min_brain_fraction: 0.05    # below this fraction of non-zero pixels a slice counts as "empty"
+  min_tumor_pixels: 50        # at least this many tumor pixels -> "tumor" slice
+  gray_zone_policy: tumor     # "tumor" (keep as tumor) or "drop" for 0 < tumor pixels < min_tumor_pixels
+  healthy_keep_ratio: 0.5     # healthy slices kept per tumor slice, per patient
+
+normalization:
+  clip: true                  # percentile clipping before z-score
+  clip_low: 0.5
+  clip_high: 99.5
+
+augmentation:                 # training only
+  hflip_prob: 0.5
+  vflip_prob: 0.0             # vertical flips are not anatomically realistic for axial slices
+  rotate_degrees: 10          # random rotation in [-x, x]
+
+task: binary                  # "binary" = whole tumor (seg > 0). "multiclass" is an extension point (see config.py)
+
+model:
+  in_channels: 4              # one channel per MRI modality (not RGB)
+  out_channels: 1
+  base_filters: 32
+  depth: 4                    # number of down-sampling steps
+
+training:
+  epochs: 30
+  batch_size: 16
+  lr: 0.001
+  weight_decay: 0.0001
+  num_workers: 2
+  mixed_precision: true       # used only on CUDA
+  bce_weight: 0.5
+  dice_weight: 0.5
+  pos_weight: null            # e.g. 3.0 to up-weight tumor pixels in BCE; null = off
+  threshold: 0.5              # probability -> binary mask
+
+evaluation:
+  batch_size: 32              # slices per forward pass during validation / inference
+  num_overlay_patients: 4
+
+device: auto                  # auto -> cuda, else mps, else cpu
+
+sanity:
+  overfit_one_batch: false
+  overfit_steps: 500

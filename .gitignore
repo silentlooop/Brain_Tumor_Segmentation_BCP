@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Data: BraTS scans must be downloaded separately (not redistributed here)
+BTSP_training_data/
+*.nii
+*.nii.gz
+
+# Training outputs
+outputs/
+smoke_outputs/
+overfit_outputs/
+config_run.yaml
+config_smoke.yaml
+config_overfit.yaml
+*.pt
+*.pth
+*.zip
