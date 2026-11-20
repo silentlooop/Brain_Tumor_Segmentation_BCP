@@ -8,7 +8,7 @@ __pycache__/
 .DS_Store
 
 # Data: BraTS scans must be downloaded separately (not redistributed here)
-BTSP_training_data/
+datasample/
 *.nii
 *.nii.gz
 

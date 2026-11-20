@@ -16,7 +16,7 @@ per patient with 3D Dice and IoU.
 ├── config.yaml            # every setting
 ├── train.py, test.py      # entry points
 ├── *.py                   # modules (see table below)
-├── BTSP_training_data/    # your local BraTS scans (git-ignored, not included)
+├── datasample/    # your local BraTS scans (git-ignored, not included)
 ├── requirements.txt
 └── README.md
 ```
@@ -41,11 +41,11 @@ per patient with 3D Dice and IoU.
 
 The MRI scans are **not included** in this repository. Download BraTS 2021 (Task 1, training data)
 from the [official challenge page](http://braintumorsegmentation.org/) or a public mirror, and put
-the patient folders in `BTSP_training_data/` (or point `paths.data_root` in `config.yaml`
+the patient folders in `datasample/` (or point `paths.data_root` in `config.yaml`
 elsewhere). The expected layout is:
 
 ```
-BTSP_training_data/            <- paths.data_root
+datasample/            <- paths.data_root
   BraTS2021_00495/
     BraTS2021_00495_flair.nii.gz   (240, 240, 155), 1 mm, co-registered
     BraTS2021_00495_t1.nii.gz
@@ -69,7 +69,7 @@ pip install -r requirements.txt
 python model.py                                   # U-Net shape test
 python train.py --config config.yaml [--debug]    # --debug prints tensor shapes
 python test.py --config config.yaml --checkpoint outputs/run_XXXX/checkpoints/best.pt
-python test.py --config config.yaml --checkpoint <best.pt> --patient BTSP_training_data/BraTS2021_00495
+python test.py --config config.yaml --checkpoint <best.pt> --patient datasample/BraTS2021_00495
 ```
 
 Set `sanity.overfit_one_batch: true` to check that the model can memorise one batch (loss → ~0).
